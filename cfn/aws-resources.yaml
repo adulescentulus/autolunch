@@ -1,0 +1,93 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: S3 Backed Lambda Email Forwarder for SES
+Resources:
+  SesBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+        - ExpirationInDays: 3
+          Status: Enabled
+  SesBucketPolicy:
+      Type: "AWS::S3::BucketPolicy"
+      Properties:
+        Bucket:
+          Ref: "SesBucket"
+        PolicyDocument:
+          Statement:
+              Effect: Allow
+              Principal:
+                Service: ses.amazonaws.com
+              Action: s3:PutObject
+              Resource:
+              - Fn::Join:
+                - ''
+                - - 'arn:aws:s3:::'
+                  - Ref: SesBucket
+                  - "/*"
+              Condition:
+                StringEquals:
+                  aws:Referer:
+                    Ref: AWS::AccountId
+  LambdaSesRole:
+    Type: AWS::IAM::Role
+    DependsOn:
+    - SesBucket
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: lambda-cloudwatch-access
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource:
+            - "arn:aws:logs:*:*:*"
+      - PolicyName: lambda-s3-access
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - s3:GetObject
+            Resource:
+            - Fn::Join:
+              - ''
+              - - 'arn:aws:s3:::'
+                - Ref: SesBucket
+                - "/*"
+  SesTinchenLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../lambda/tinchen.zip
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      MemorySize: 128
+      Timeout: 30
+      Role:
+        Fn::GetAtt:
+        - LambdaSesRole
+        - Arn
+      Environment:
+        Variables:
+          SesBucketName:
+            Ref: SesBucket
+
+Outputs:
+  SesBucketName:
+    Description: The bucket that stores SES ACM mail
+    Value:
+        Ref: SesBucket
