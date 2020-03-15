@@ -330,3 +330,7 @@ ASALocalRun/
 .mfractor/
 
 *.DS_Store
+
+######### start custom settings
+lambda_layers/
+lambda/*.zip

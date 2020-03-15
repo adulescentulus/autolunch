@@ -1,4 +1,6 @@
 from __future__ import print_function
+from bs4 import BeautifulSoup
+from requests import get
 
 import email
 import zipfile
@@ -56,13 +58,31 @@ def processMail(msg):
 
             # skip any text/plain (txt) attachments
             if ctype == 'text/html':
-                print('Found it!')
+                link = getLink(part.get_payload(decode=True))
+                download(link, '/tmp/speiseplan.pdf')
+                print('downloaded!')
                 #print(msgpart.get_payload(decode=True))
                 #body = msgpart.get_payload(decode=True)  # decode
                 #print(body)
     # not multipart - i.e. plain text, no attachments, keeping fingers crossed
     else:
         body = msg.get_payload(decode=True)
+
+def getLink(html):
+    soup = BeautifulSoup(html, 'html.parser')
+    print(soup.select('a > span'))
+    for anchor in soup.select('a > span'):
+        spanText = anchor.get_text(strip=True)
+        if (spanText.find('Speiseplan') >= 0 and spanText.endswith('pdf') == True):
+            return anchor.find_parent()['href']
+
+def download(url, file_name):
+    # open in binary mode
+    with open(file_name, "wb") as file:
+        # get request
+        response = get(url)
+        # write to file
+        file.write(response.content)
 
 def extract_attachment(attachment):
     # Process filename.zip attachments

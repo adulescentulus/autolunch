@@ -2,7 +2,7 @@
 set -euo pipefail
 
 cd lambda/tinchen
-zip ../tinchen.zip ./*
+zip ../tinchen.zip ./*.py
 cd $OLDPWD
 
 cd cfn

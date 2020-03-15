@@ -75,6 +75,8 @@ Resources:
       CodeUri: ../lambda/tinchen.zip
       Handler: app.lambda_handler
       Runtime: python3.8
+      Layers:
+      - arn:aws:lambda:eu-west-1:840940990295:layer:autolunchPython:1
       MemorySize: 128
       Timeout: 30
       Role:
