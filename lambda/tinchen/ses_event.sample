@@ -1,0 +1,1 @@
+{'Records': [{'eventSource': 'aws:ses', 'eventVersion': '1.0', 'ses': {'mail': {'timestamp': '2020-03-14T14:48:33.965Z', 'source': 'Andreas.Groll@example.com', 'messageId': 'kc31kvu3o3b524ip1cr4qcu8q0onqar4q4sqj5o1', 'destination': ['receiver@targetemail.com']}}}]}
