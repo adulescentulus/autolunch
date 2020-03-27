@@ -334,3 +334,4 @@ ASALocalRun/
 ######### start custom settings
 lambda_layers/
 lambda/*.zip
+cfn/template-export.yaml
