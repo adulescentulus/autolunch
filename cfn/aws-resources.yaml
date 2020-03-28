@@ -1,6 +1,13 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 Description: S3 Backed Lambda Email Forwarder for SES
+Parameters:
+  MailSender:
+    Description: Verified SES sender address
+    Type: String
+  MailRecipient:
+    Description: Where to send the mail
+    Type: String
 Resources:
   SesBucket:
     Type: AWS::S3::Bucket
@@ -69,12 +76,26 @@ Resources:
               - - 'arn:aws:s3:::'
                 - Ref: SesBucket
                 - "/*"
+      - PolicyName: sendEmails
+        PolicyDocument:
+          Statement:
+              Effect: Allow
+              Action:
+                  - "ses:SendEmail"
+                  - "ses:SendRawEmail"
+              Resource: "*"
+              Condition:
+                  StringEquals:
+                      "ses:FromAddress": 
+                          Ref: MailSender
   SesTinchenLambda:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ../lambda/tinchen.zip
       Handler: app.lambda_handler
       Runtime: python3.8
+      Layers:
+      - arn:aws:lambda:eu-west-1:840940990295:layer:autolunchPython:1
       MemorySize: 128
       Timeout: 30
       Role:
@@ -85,6 +106,10 @@ Resources:
         Variables:
           SesBucketName:
             Ref: SesBucket
+          MailSender:
+            Ref: MailSender
+          MailRecipient:
+            Ref: MailRecipient
 
 Outputs:
   SesBucketName:

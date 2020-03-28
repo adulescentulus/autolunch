@@ -1,0 +1,864 @@
+Return-Path: <Andreas.Groll@example.com>
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2087.outbound.protection.outlook.com [40.107.21.87])
+ by inbound-smtp.eu-west-1.amazonaws.com with SMTP id 5ogls4nemvaqm5f8tosu02r8rovn5o85qbj7ci01
+ for receiver@targetemail.com;
+ Fri, 27 Mar 2020 13:30:25 +0000 (UTC)
+Received-SPF: pass (spfCheck: domain of example.com designates 40.107.21.87 as permitted sender) client-ip=40.107.21.87; envelope-from=Andreas.Groll@example.com; helo=mail-vi1eur05on2087.outbound.protection.outlook.com;
+Authentication-Results: amazonses.com;
+ spf=pass (spfCheck: domain of example.com designates 40.107.21.87 as permitted sender) client-ip=40.107.21.87; envelope-from=Andreas.Groll@example.com; helo=mail-vi1eur05on2087.outbound.protection.outlook.com;
+ dmarc=none header.from=example.com;
+X-SES-RECEIPT: AEFBQUFBQUFBQUFFUFVuMktybDErQnk0czNaYklLejdQMnQ3aHBKR0dLQnBTV25jUXJEZzAxekppczZGK004MSs4emxEK3E1emV4YUdYT0t1SzJRU0xuYU5sK2gvSFRtWHVnWnhYTDA4cTVxcEU2NEpKQjNpUFhHclBzUVc3SmJSSlBIMGhpWFdSWE9Uc0NkTm5EYjN0ajVnV0RlMGJNOW9wdE81aTI4NGVrS2xVd1R3aEVadkdxanloMEJoZEU2V3p6amhldWtKWkpUOTg2SXcvMFV4TmF0dmxHNUtBTVVGSWRxQVFQeUJBS3dBYjMwTXpsZFNXYUJjaU5wNStqRmEwZGp1WlcrUW02QTh3ei9meG5oU1NtSHlEdnlJb2NuSnN6ZzFsbTBBWDdGc1QvWnRFeW5SVEdXckR2T3lVN1NqVFN1TFpieDdYeWs9
+X-SES-DKIM-SIGNATURE: a=rsa-sha256; q=dns/txt; b=H54o6ZquKiqGU/WjMceWy4OH4uQy8me23SFuwWagSagla/zvu2cE3QHPZY++X/j0IXOA/wfWBrmyy0MKeDmvnoRSYVrj0SFR77e4hD5pclfSdSHmoGLHCcWcbeI+HZ5FrMMUZrQpXlSt1QboRaycdWteWkcDI6TfaarVT0bKRyU=; c=relaxed/simple; s=shh3fegwg5fppqsuzphvschd53n6ihuv; d=amazonses.com; t=1585315825; v=1; bh=mtmhyOCYGZaBGUdJHwaxECamYq4YHkP8kuya78arhWo=; h=From:To:Cc:Bcc:Subject:Date:Message-ID:MIME-Version:Content-Type:X-SES-RECEIPT;
+Received: from AM0PR10CA0020.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:17c::30)
+ by AM0PR01MB5986.eurprd01.prod.exchangelabs.com (2603:10a6:208:15f::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.19; Fri, 27 Mar
+ 2020 13:30:23 +0000
+Received: from VE1EUR01FT039.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:208:17c:cafe::ab) by AM0PR10CA0020.outlook.office365.com
+ (2603:10a6:208:17c::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.18 via Frontend
+ Transport; Fri, 27 Mar 2020 13:30:23 +0000
+Authentication-Results: spf=pass (sender IP is 13.81.10.179)
+ smtp.mailfrom=example.com; targetemail.com; dkim=none (message not
+ signed) header.d=none;targetemail.com; dmarc=bestguesspass
+ action=none header.from=example.com;
+Received-SPF: Pass (protection.outlook.com: domain of example.com designates
+ 13.81.10.179 as permitted sender) receiver=protection.outlook.com;
+ client-ip=13.81.10.179; helo=westeu13-emailsignatures-cloud.codetwo.com;
+Received: from westeu13-emailsignatures-cloud.codetwo.com (13.81.10.179) by
+ VE1EUR01FT039.mail.protection.outlook.com (10.152.3.35) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2856.17 via Frontend Transport; Fri, 27 Mar 2020 13:30:23 +0000
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com (104.47.9.56) by westeu13-emailsignatures-cloud.codetwo.com with CodeTwo SMTP Server (TLS12) via SMTP; Fri, 27 Mar 2020 13:30:21 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YuOB7BbjRcjfaSWu7jWujnAcx27OIKuOXHvzpL0Stvvtu95JQlFoz08kd844ThP8ybVbI2om08V9tRuYV8NkKXOJPGP33mTpxXyzZwdiD2Q9h7zuKpi5rDkZGocQTpIECKdkUcoyvTHmmCMBanGkW3+iNb1amO7QkM1kUyXLDBFqgt7mB+n99E9+wDKKE498+BhA3cL5oMoJjrczoZdPXgbtrr5P+JZWWVlple5Ui4lsPqPOaOOkPsQWU5e0t6vyNdUOit9MbVudg1gRMO1vL9nmDR3vw1hi6DKVhTUdSFRpUCaWoCqLE1MmhjWrplLxvqCu0dDGxt40N8AkJM6Axw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WCshhuZYVmZvuVj3Fm72sPxbZCZxWp4v4C5ndZmLdHY=;
+ b=XZrIZHl1noz8CKF2RTf/iH0wmSrckqmM8HAWQDv+gm0Gr2Pb/j2A/wZVyrXOErPh6SMNQvjQfzyfo/3Q7IhKQyWuo1e4fPa+lw/ncu/Dt0xM8X7yn4H96Ul9QppfxTvgy2Mix7V8R86y+82n5OiFSyVGla7Pns6Zbp27SlipZPwICVQnzsIxv4qKcXFVuseM0y3AULokGamdqHqITxUZOCkTMo8nt7uPea52dkDo3+x1isVFNQwzgkJ88IZ+Y3uv6NUetZ4u4ZjFi3dFDUdTr0c+Lqb2yYRxdaK96kchZ5/hgC4fwH9pXeRKHDonJrjyQJgSg8fQpGhjFw7MSZkjiA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=example.com; dmarc=pass action=none header.from=example.com;
+ dkim=pass header.d=example.com; arc=none
+Received: from HE1PR0102MB2795.eurprd01.prod.exchangelabs.com (10.171.198.28)
+ by HE1PR0102MB2747.eurprd01.prod.exchangelabs.com (10.171.196.140) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.22; Fri, 27 Mar
+ 2020 13:30:17 +0000
+Received: from HE1PR0102MB2795.eurprd01.prod.exchangelabs.com ([::1]) by
+ HE1PR0102MB2795.eurprd01.prod.exchangelabs.com
+ ([fe80::e851:6a81:6ea9:4928%6]) with Microsoft SMTP Server id 15.20.2835.025;
+ Fri, 27 Mar 2020 13:30:17 +0000
+From: "Groll, Andreas" <Andreas.Groll@example.com>
+To: "receiver@targetemail.com"
+	<receiver@targetemail.com>
+Subject: WG: Tinchens Wirtschaft 30.03. bis 03.04.2020
+Thread-Topic: Tinchens Wirtschaft 30.03. bis 03.04.2020
+Thread-Index: AQHWBDvaT7nWq5iShU2tmcEG5f5WJahcbz3a
+Date: Fri, 27 Mar 2020 13:30:17 +0000
+Message-ID: <bf3a05bac99e4ecabf02a9700bd61839@HE1PR0102MB2795.eurprd01.prod.exchangelabs.com>
+References: <44c7727dd0a90ea6cfc092abfbd00593@dc-eventcatering.de>
+ <9411cc10-ff9d-486f-ad0d-a270c88aa229.79456188-6071-420a-a77d-f95d10b46560.6100b2b4-e29f-4878-bbdd-049422bb7b44@emailsignatures365.codetwo.com>
+In-Reply-To: <44c7727dd0a90ea6cfc092abfbd00593@dc-eventcatering.de>
+X-MS-Has-Attach:
+X-MS-Exchange-Inbox-Rules-Loop: andreas.groll@example.com
+X-MS-TNEF-Correlator:
+Authentication-Results-Original: spf=none (sender IP is )
+ smtp.mailfrom=Andreas.Groll@example.com; 
+x-ms-exchange-parent-message-id: <44c7727dd0a90ea6cfc092abfbd00593@dc-eventcatering.de>
+auto-submitted: auto-generated
+x-ms-exchange-generated-message-source: Mailbox Rules Agent
+x-ms-publictraffictype: Email
+X-MS-Office365-Filtering-Correlation-Id: dcc8b2f1-ff58-4de9-658e-08d7d25300d1
+x-ms-traffictypediagnostic: HE1PR0102MB2747:|AM0PR01MB5986:
+X-Microsoft-Antispam-PRVS:
+	<AM0PR01MB598663998B569BF16B090CA79ACC0@AM0PR01MB5986.eurprd01.prod.exchangelabs.com>
+x-ms-oob-tlc-oobclassifiers: OLM:983;OLM:983;
+x-forefront-prvs: 0355F3A3AE
+X-Forefront-Antispam-Report-Untrusted:
+ CIP:255.255.255.255;CTRY:;LANG:de;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0102MB2795.eurprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(396003)(136003)(376002)(346002)(39850400004)(366004)(7696005)(316002)(81166006)(19627405001)(66574012)(6506007)(88996005)(66476007)(66946007)(64756008)(66556008)(2906002)(8936002)(8676002)(66446008)(24736004)(108616005)(6916009)(9686003)(86362001)(55016002)(478600001)(5660300002)(81156014)(36005)(15974865002)(71200400001)(186003)(15398625002)(15579715002)(16864985002);DIR:OUT;SFP:1101;
+received-spf: None (protection.outlook.com: example.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original:
+ JtzQ/P0Ac55SFpC3zGQmBF7bezzYE7Yygt+wEI11ZIuW7n+qR+5cfJcgpCImxasqadM7Sw1lQoGDx1Q8KLW5LZNarqXUWMnGVvXjvUe/GHaG3DbPfCz9h5z0H5wKPssKF7B2FunBPDvxcrFqSh2twFvqpYebciBJhMzkxQZdODpGa/cw2YQQoVDW1jkwmEKzyzU1NT87CRqzK9ccpuWGYzTtr4yfLEKV7enlWArj1ukDoZzTg7omjDId+uT9YGoILR/AORT6chNcydSvg7Iep3QCJSrvEC33wk13D8Fo4VGV+IdvkRDYy2e6DjxCSK5fagGByxxWn0PTjIERvJ1eaqU/gaV11yvvtdR8E0dDMjIrQ5wM0y2B1s0qD1rr2hoigtQjBdIZPBvkySJyB98H6AmnNFdM4vmPSZQK6eqZ2Y336t8dtXjiL0OaaO0/cwKm8TZHnyBCLsp0Kd2CKYutrs0S4Zi49noil/Kd3dI8URHxmaVLwr+FfREboE5dT/Uka4jDmJXDQPhkp+ljB5+NDYNthjNyeHPzrRBwl1RQFuY54/KvVgp5r5F5E2v851W1e4GFANAFUnzawj/6aDWmhQuRDfXXIbI9+7ASegkq+QARF1q+Y5LuGRfRvFmiHY68EViY1THbm5bskr8pAUZPQg==
+x-ms-exchange-transport-forked: True
+Content-Type: multipart/alternative;
+	boundary="_000_bf3a05bac99e4ecabf02a9700bd61839HE1PR0102MB2795eurprd01_"
+MIME-Version: 1.0
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0102MB2747
+X-CodeTwo-MessageID: ba1ac14d-35f3-4f51-bea9-56d11d8ab2b7.20200327133020@westeu13-emailsignatures-cloud.codetwo.com
+X-CodeTwoProcessed: true
+Return-Path: Andreas.Groll@example.com
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+ VE1EUR01FT039.eop-EUR01.prod.protection.outlook.com
+X-Forefront-Antispam-Report:
+	CIP:13.81.10.179;CTRY:NL;LANG:de;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:westeu13-emailsignatures-cloud.codetwo.com;PTR:westeu13-emailsignatures-cloud.codetwo.com;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(376002)(39850400004)(396003)(136003)(346002)(46966005)(108616005)(24736004)(86362001)(8676002)(8936002)(7696005)(19627405001)(246002)(316002)(478600001)(6506007)(55016002)(70586007)(9686003)(336012)(66574012)(82740400003)(186003)(26005)(5660300002)(2906002)(7596002)(356004)(15974865002)(7636002)(70206006)(6916009)(47076004)(15579715002)(15398625002)(16864985002);DIR:OUT;SFP:1101;
+X-MS-Office365-Filtering-Correlation-Id-Prvs:
+	3bcf7f3a-c59b-48d5-03f6-08d7d252fd59
+X-Forefront-PRVS: 0355F3A3AE
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	HS0mxmF+HMAwIaN/4Nu6IvCfBAppvXgXT+/ovwFGG4Mn9tslnPrJ6t2GIiNs1A1tLSx+EB63FlzKgDxVRc60iYEC54sSKTDYsbwczK2E3z1X1QNqWeYc5xeWEHplNAUVv5u2XWnz6VRJsXgWnWHrsPKFDLRMv4Ow+boIR5OGgEWYevUord+VDjag29fPJ0agfjSP8n+C9kgNSNK5Drumltb40PPz+J1ujVcupBJUS4bzu0acu0gqP0w5yJ5BVbnke2NbXplTpNXJ5pQFPvPfH4pVln3gk4klY8fEddNgo3kJm0+eddwpV4GFuRlzajeJOh1kem2X80EZxRx7ZfkgOHzQFSt+FpJGm3i+gBbAiUKOFdlD/tHfoIzk+W5oZJYkUQGzT1j6FuR0NxC4EWa939kh0zlK1yviNwqP8mRJdhOvH8es3bdap+5sKepCHHN/BgaU4XNFMxLxSG0EpBmriHSO01woSuAmGyOBQN0g1wJwgq8udL6qgDEbGGlytpmAL+wPbeU74WLJuog/seszGUZxeZyC91nhatJcGrG8mH4rS3dXL0oL9IKjja/LHu7ZOfbrHjNHaR5IeYcWRGZzUBlxapKpVtFiENpsoUsDuItNUQhGP4V5JHoMu7ZlM9jaTGecjzJxLnNIdkAmt7t4KbIfhDDfUvFTMWg1lOtKdRKLSCa6UTZUVHTviFWJ9YZZ
+X-OriginatorOrg: example.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2020 13:30:23.3546
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: dcc8b2f1-ff58-4de9-658e-08d7d25300d1
+X-MS-Exchange-CrossTenant-Id: 338159a0-dd8f-45af-9672-faaa54bc6b24
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=338159a0-dd8f-45af-9672-faaa54bc6b24;Ip=[13.81.10.179];Helo=[westeu13-emailsignatures-cloud.codetwo.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR01MB5986
+
+--_000_bf3a05bac99e4ecabf02a9700bd61839HE1PR0102MB2795eurprd01_
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+
+
+Andreas Groll
+Principal DevOps Engineer
+
+example GmbH
+F=F6pplstra=DFe 3
+04347 Leipzig
+
+t.+49 341 49635-249 m.+49 172 3769734
+@.Andreas.Groll@example.com w.example.com<https://www.example.com/>
+
+Gesch=E4ftsf=FChrer: Dr. Peter Heine, Andreas Ritter
+Amtsgericht Leipzig HRB 16467
+
+Unsere Datenschutzerkl=E4rung finden Sie unter example.com/datenschutz
+
+
+
+________________________________
+Von: Tinchens Wirtschaft
+Gesendet: Freitag, 27. M=E4rz 2020 13:33:53 (UTC+01:00) Amsterdam, Berlin, =
+Bern, Rome, Stockholm, Vienna
+An: Groll, Andreas
+Betreff: Tinchens Wirtschaft 30.03. bis 03.04.2020
+
+
+
+
+
+
+[https://dc-eventcatering.de/wp-content/uploads/2020/03/Wirtschaft.jpg]
+
+Open email in your web browser.<https://dc-eventcatering.de?mailpoet_router=
+&endpoint=3Dtrack&action=3Dclick&data=3DWyIyMzEiLCJzcTVqNXNsZzFua2s0OHc4Y2t=
+jY2dndzhzc2c0OGtzOCIsIjEiLCI4NjA1MjhjNDBmOWMiLGZhbHNlXQ>
+
+
+TINCHENS WIRTSCHAFT
+und Lieferdienst
+30.03. bis 03.04.2020
+
+
+
+Liebe G=E4ste,
+Tinchens Wirtschaft hat in der Woche vom 30.03. bis 04.03.2020 wieder f=FCr=
+ Sie ge=F6ffnet!
+
+Wir bieten Ihnen t=E4glich ein Hauptgericht und eine Suppe an.
+Dazu haben wir unsere Suppe als vegetarische Alternative sowie
+Montag bis Donnerstag ein vegetarisches Wochengericht im Angebot.
+
+
+Bitte beachten Sie, dass die die Gerichte ausschlie=DFlich
+frisch verpackt zur Abholung angeboten werden!
+
+
+Den Wochenplan als PDF-Datei k=F6nnen Sie =F6ffnen und speichern,
+indem Sie auf folgenden Link klicken:
+
+Speiseplan als PDF<https://dc-eventcatering.de?mailpoet_router&endpoint=3Dt=
+rack&action=3Dclick&data=3DWyIyMzEiLCJzcTVqNXNsZzFua2s0OHc4Y2tjY2dndzhzc2c0=
+OGtzOCIsIjEiLCJlMzcwYTJhNDZkY2MiLGZhbHNlXQ>
+
+[https://dc-eventcatering.de/wp-content/uploads/2020/03/Lieferdienst.png]
+TINCHENS LIEFERDIENST
+
+Im Gewerbegebiet Nordost (und angrenzend) bieten wir Ihnen derzeit unseren =
+Lieferdienst an!
+Bestellen sie t=E4glich bis 10:00 Uhr und wir liefern Ihnen zwischen 11:00 =
+Uhr und 13:00 Uhr die gew=FCnschten Speisen an.
+Der Mindestbestellwert betr=E4gt nur 5,00 =80.
+Die Preise f=FCr die Anlieferung sind im Online-Speiseplan =FCber dem Beste=
+llformular bereits inbegriffen:
+
+zur Bestellung<https://dc-eventcatering.de?mailpoet_router&endpoint=3Dtrack=
+&action=3Dclick&data=3DWyIyMzEiLCJzcTVqNXNsZzFua2s0OHc4Y2tjY2dndzhzc2c0OGtz=
+OCIsIjEiLCI3ZTRkYjQ3Y2Y3NzkiLGZhbHNlXQ>
+
+Wir w=FCnschen Guten Appetit
+und bleiben Sie Gesund!
+
+Ihr Team von DC Catering
+
+
+
+
+
+
+[https://dc-eventcatering.de/wp-content/uploads/2019/02/DCC-Logo-4c-2019-we=
+b.png]
+DC-CATERING
+Ihr Anspruch ist unser Geschmack
+
+Stefan Monse | Office
+Telefon: 0341 - 92 78 08 12
+
+DC Catering GbR
+Inh. Christian Seidel
+Inh. Daniel Schneidewind
+F=F6pplstra=DFe 5
+04347 Leipzig
+Web: www.dc-catering.de<https://dc-eventcatering.de?mailpoet_router&endpoin=
+t=3Dtrack&action=3Dclick&data=3DWyIyMzEiLCJzcTVqNXNsZzFua2s0OHc4Y2tjY2dndzh=
+zc2c0OGtzOCIsIjEiLCI5ODZjMzRiYTE2ZDIiLGZhbHNlXQ>
+Facebook: Facebook/DC Catering <https://dc-eventcatering.de?mailpoet_router=
+&endpoint=3Dtrack&action=3Dclick&data=3DWyIyMzEiLCJzcTVqNXNsZzFua2s0OHc4Y2t=
+jY2dndzhzc2c0OGtzOCIsIjEiLCJjZTMwNGMyZjc3ZWYiLGZhbHNlXQ>
+
+
+
+SAVE PAPER - THINK BEFORE YOU PRINT Diese E-Mail enth=E4lt vertrauliche und=
+/oder rechtlich gesch=FCtzte Informationen. Wenn Sie nicht der richtige Adr=
+essat sind oder diese E-Mail irrt=FCmlich erhalten haben, informieren Sie b=
+itte sofort den Absender und vernichten Sie diese Mail. Das unerlaubte Kopi=
+eren sowie die unbefugte Weitergabe dieser Mail sind nicht gestattet. Der A=
+ustausch von Nachrichten mit unserem Unternehmen via E-Mail dient ausschlie=
+=DFlich Informationszwecken. Rechtsgesch=E4ftliche Erkl=E4rungen d=FCrfen =
+=FCber dieses Medium nicht ausgetauscht werden. Verf=E4lschungen des urspr=
+=FCnglichen Inhaltes dieser Nachricht bei der Daten=FCbertragung k=F6nnen n=
+icht ausgeschlossen werden. This email and any files transmitted with it ar=
+e confidential and intended solely for the use of the individual or entity =
+to whom they are addressed. If you are not the intended recipient of this e=
+mail and have received it in error you should delete
+
+Austragen<https://dc-eventcatering.de?mailpoet_router&endpoint=3Dtrack&acti=
+on=3Dclick&data=3DWyIyMzEiLCJzcTVqNXNsZzFua2s0OHc4Y2tjY2dndzhzc2c0OGtzOCIsI=
+jEiLCI4ZTVhNjJkNmFkNmQiLGZhbHNlXQ>
+
+
+
+[https://dc-eventcatering.de/wp-content/plugins/mailpoet/assets/img/mailpoe=
+t_logo_newsletter.png]<https://dc-eventcatering.de?mailpoet_router&endpoint=
+=3Dtrack&action=3Dclick&data=3DWyIyMzEiLCJzcTVqNXNsZzFua2s0OHc4Y2tjY2dndzhz=
+c2c0OGtzOCIsIjEiLCIzZGI2NzczYzM4YmEiLGZhbHNlXQ>
+
+
+
+[https://dc-eventcatering.de?mailpoet_router&endpoint=3Dtrack&action=3Dopen=
+&data=3DWyIyMzEiLCJzcTVqNXNsZzFua2s0OHc4Y2tjY2dndzhzc2c0OGtzOCIsIjEiLG51bGw=
+sZmFsc2Vd]
+
+--_000_bf3a05bac99e4ecabf02a9700bd61839HE1PR0102MB2795eurprd01_
+Content-Type: text/html; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+<html lang=3D"en" style=3D"margin:0; padding:0">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DWindows-1=
+252">
+<meta content=3D"text/html; charset=3Dutf-8">
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+>
+<meta content=3D"IE=3Dedge">
+<meta name=3D"format-detection" content=3D"telephone=3Dno">
+<style type=3D"text/css">
+<!--
+-->
+</style>
+</head>
+<body leftmargin=3D"0" topmargin=3D"0" marginwidth=3D"0" marginheight=3D"0"=
+ style=3D"margin:0; padding:0; background-color:#ffffff">
+<strong>
+<div><font face=3D"Tahoma" color=3D"#000000" size=3D"2">&nbsp;</font></div>
+</strong>
+=0A=
+<P style=3D"FONT-SIZE: 10pt; FONT-FAMILY: ARIAL"><SPAN =0A=
+style=3D"FONT-SIZE: 10pt; FONT-FAMILY: Arial,'sans-serif'; TEXT-TRANSFORM: =
+uppercase; FONT-WEIGHT: bold; COLOR: #03a3b2; LETTER-SPACING: 1pt; LINE-HEI=
+GHT: 14pt">Andreas Groll</SPAN> <SPAN =0A=
+style=3D"FONT-SIZE: 10pt; FONT-FAMILY: ARIAL; LINE-HEIGHT: 12pt"><SPAN><BR>=
+<SPAN =0A=
+style=3D"LINE-HEIGHT: 18pt">Principal DevOps Engineer<BR></SPAN><BR>example =
+GmbH<BR>F&#xF6;pplstra&#xDF;e 3<BR>04347 Leipzig<BR><BR><SPAN =0A=
+style=3D'FONT-SIZE: 10pt; FONT-FAMILY: "Arial",sans-serif; COLOR: #03a3b2; =
+LINE-HEIGHT: 120%'><STRONG>t</STRONG></SPAN><SPAN =0A=
+style=3D"COLOR: white">.</SPAN>+49 341 49635-249 <SPAN =0A=
+style=3D'FONT-SIZE: 10pt; FONT-FAMILY: "Arial",sans-serif; COLOR: #03a3b2; =
+LINE-HEIGHT: 120%'><STRONG>m</STRONG></SPAN><SPAN =0A=
+style=3D"COLOR: white">.</SPAN>+49 172 3769734<BR><SPAN =0A=
+style=3D'FONT-SIZE: 10pt; FONT-FAMILY: "Arial",sans-serif; COLOR: #03a3b2; =
+LINE-HEIGHT: 120%'><STRONG>@</STRONG></SPAN><SPAN =0A=
+style=3D"COLOR: white">.</SPAN>Andreas.Groll@example.com<SPAN =0A=
+style=3D'FONT-SIZE: 10pt; FONT-FAMILY: "Arial",sans-serif; COLOR: #03a3b2; =
+LINE-HEIGHT: 120%'> =0A=
+<STRONG>w</STRONG></SPAN><SPAN style=3D"COLOR: white">.</SPAN><A =0A=
+style=3D"TEXT-DECORATION: none; COLOR: black" =0A=
+href=3D"https://www.example.com/">example.com</A><BR><BR>Gesch&#xE4;ftsf&#xFC=
+;hrer: Dr. Peter =0A=
+Heine, Andreas Ritter <BR>Amtsgericht Leipzig HRB 16467 <BR><BR>Unsere =0A=
+Datenschutzerkl&#xE4;rung finden Sie unter example.com/datenschutz</SPAN></S=
+PAN></P>=0A=
+<P style=3D"FONT-SIZE: 10pt; FONT-FAMILY: ARIAL"><SPAN =0A=
+style=3D"FONT-SIZE: 10pt; FONT-FAMILY: ARIAL; LINE-HEIGHT: 12pt"><SPAN>&nbs=
+p;</SPAN></SPAN></P><hr tabindex=3D"-1" style=3D"display:inline-block; widt=
+h:98%">
+<font face=3D"Tahoma" size=3D"2"><b>Von:</b> Tinchens Wirtschaft<br>
+<b>Gesendet:</b> Freitag, 27. M=E4rz 2020 13:33:53 (UTC&#43;01:00) Amsterda=
+m, Berlin, Bern, Rome, Stockholm, Vienna<br>
+<b>An:</b> Groll, Andreas<br>
+<b>Betreff:</b> Tinchens Wirtschaft 30.03. bis 03.04.2020<br>
+</font><br>
+<div></div>
+<div>
+<table class=3D"mailpoet_template" border=3D"0" width=3D"100%" cellpadding=
+=3D"0" cellspacing=3D"0" style=3D"border-collapse:collapse; border-spacing:=
+0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_preheader" height=3D"1" style=3D"border-collapse:coll=
+apse; display:none; visibility:hidden; font-size:1px; color:#333333; line-h=
+eight:1px; max-height:0; max-width:0; opacity:0; overflow:hidden">
+</td>
+</tr>
+<tr>
+<td align=3D"center" class=3D"mailpoet-wrapper" valign=3D"top" style=3D"bor=
+der-collapse:collapse; background-color:#ffffff">
+<table class=3D"mailpoet_content-wrapper" border=3D"0" width=3D"660" cellpa=
+dding=3D"0" cellspacing=3D"0" style=3D"border-collapse:collapse; background=
+-color:#ffffff; border-spacing:0; max-width:660px; width:100%">
+<tbody>
+<tr>
+<td class=3D"mailpoet_content" align=3D"center" style=3D"border-collapse:co=
+llapse">
+<table width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" styl=
+e=3D"border-collapse:collapse; border-spacing:0">
+<tbody>
+<tr>
+<td style=3D"border-collapse:collapse; padding-left:0; padding-right:0">
+<table width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" clas=
+s=3D"mailpoet_cols-one" style=3D"border-collapse:collapse; border-spacing:0=
+; table-layout:fixed; margin-left:auto; margin-right:auto; padding-left:0; =
+padding-right:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_spacer" height=3D"50" valign=3D"top" style=3D"border-=
+collapse:collapse">
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_content-cols-three" align=3D"left" style=3D"border-co=
+llapse:collapse">
+<table width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" styl=
+e=3D"border-collapse:collapse; border-spacing:0">
+<tbody>
+<tr>
+<td align=3D"center" style=3D"border-collapse:collapse; font-size:0">
+<div style=3D"display:inline-block; max-width:220px; vertical-align:top; wi=
+dth:100%">
+<table width=3D"220" class=3D"mailpoet_cols-three" border=3D"0" cellpadding=
+=3D"0" cellspacing=3D"0" align=3D"right" style=3D"border-collapse:collapse;=
+ width:100%; max-width:220px; border-spacing:0; table-layout:fixed; margin-=
+left:auto; margin-right:auto; padding-left:0; padding-right:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_spacer" height=3D"20" valign=3D"top" style=3D"border-=
+collapse:collapse">
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style=3D"display:inline-block; max-width:220px; vertical-align:top; wi=
+dth:100%">
+<table width=3D"220" class=3D"mailpoet_cols-three" border=3D"0" cellpadding=
+=3D"0" cellspacing=3D"0" align=3D"right" style=3D"border-collapse:collapse;=
+ width:100%; max-width:220px; border-spacing:0; table-layout:fixed; margin-=
+left:auto; margin-right:auto; padding-left:0; padding-right:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_image mailpoet_padded_vertical mailpoet_padded_side" =
+align=3D"center" valign=3D"top" style=3D"border-collapse:collapse; padding-=
+top:10px; padding-bottom:10px; padding-left:20px; padding-right:20px">
+<img src=3D"https://dc-eventcatering.de/wp-content/uploads/2020/03/Wirtscha=
+ft.jpg" width=3D"180" alt=3D"Wirtschaft" style=3D"height:auto; max-width:10=
+0%; border:0; display:block; outline:none; text-align:center">
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style=3D"display:inline-block; max-width:220px; vertical-align:top; wi=
+dth:100%">
+<table width=3D"220" class=3D"mailpoet_cols-three" border=3D"0" cellpadding=
+=3D"0" cellspacing=3D"0" align=3D"right" style=3D"border-collapse:collapse;=
+ width:100%; max-width:220px; border-spacing:0; table-layout:fixed; margin-=
+left:auto; margin-right:auto; padding-left:0; padding-right:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_spacer" height=3D"20" valign=3D"top" style=3D"border-=
+collapse:collapse">
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_header_footer_padded mailpoet_header" style=3D"border=
+-collapse:collapse; padding:10px 20px; line-height:19.2px; text-align:cente=
+r; color:#222222; font-family:Arial,'Helvetica Neue',Helvetica,sans-serif; =
+font-size:12px">
+<span style=3D"color:#000000"><a href=3D"https://dc-eventcatering.de?mailpo=
+et_router&amp;endpoint=3Dtrack&amp;action=3Dclick&amp;data=3DWyIyMzEiLCJzcT=
+VqNXNsZzFua2s0OHc4Y2tjY2dndzhzc2c0OGtzOCIsIjEiLCI4NjA1MjhjNDBmOWMiLGZhbHNlX=
+Q" style=3D"color:#000000; text-decoration:underline">Open
+ email in your web browser.</a></span> </td>
+</tr>
+</tbody>
+</table>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_content" align=3D"center" style=3D"border-collapse:co=
+llapse">
+<table width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" styl=
+e=3D"border-collapse:collapse; border-spacing:0">
+<tbody>
+<tr>
+<td style=3D"border-collapse:collapse; padding-left:0; padding-right:0">
+<table width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" clas=
+s=3D"mailpoet_cols-one" style=3D"border-collapse:collapse; border-spacing:0=
+; table-layout:fixed; margin-left:auto; margin-right:auto; padding-left:0; =
+padding-right:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" v=
+align=3D"top" style=3D"border-collapse:collapse; padding-top:10px; padding-=
+bottom:10px; padding-left:20px; padding-right:20px; word-break:break-word; =
+word-wrap:break-word">
+<h2 style=3D"margin:0 0 7.2px; color:#222222; font-family:Arial,'Helvetica =
+Neue',Helvetica,sans-serif; font-size:24px; line-height:38.4px; text-align:=
+center; padding:0; font-style:normal; font-weight:normal">
+<span style=3D"color:#ba372a"><strong>TINCHENS WIRTSCHAFT</strong></span></=
+h2>
+<h2 style=3D"margin:0 0 7.2px; color:#222222; font-family:Arial,'Helvetica =
+Neue',Helvetica,sans-serif; font-size:24px; line-height:38.4px; text-align:=
+center; padding:0; font-style:normal; font-weight:normal">
+<strong></strong>und Lieferdienst</h2>
+<h3 style=3D"margin:0 0 5.4px; color:#333333; font-family:Arial,'Helvetica =
+Neue',Helvetica,sans-serif; font-size:18px; line-height:28.8px; margin-bott=
+om:0; text-align:center; padding:0; font-style:normal; font-weight:normal">
+30.03. bis 03.04.2020</h3>
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_divider" valign=3D"top" style=3D"border-collapse:coll=
+apse; padding:13px 20px 13px 20px">
+<table width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" styl=
+e=3D"border-collapse:collapse; border-spacing:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_divider-cell" style=3D"border-collapse:collapse; bord=
+er-top-width:3px; border-top-style:solid; border-top-color:#aaaaaa">
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" v=
+align=3D"top" style=3D"border-collapse:collapse; padding-top:10px; padding-=
+bottom:10px; padding-left:20px; padding-right:20px; word-break:break-word; =
+word-wrap:break-word">
+<table width=3D"100%" cellpadding=3D"0" style=3D"border-collapse:collapse; =
+border-spacing:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_paragraph" style=3D"border-collapse:collapse; color:#=
+000000; font-family:Arial,'Helvetica Neue',Helvetica,sans-serif; font-size:=
+14px; line-height:22.4px; word-break:break-word; word-wrap:break-word; text=
+-align:center">
+Liebe G=E4ste, </td>
+</tr>
+</tbody>
+</table>
+<table width=3D"100%" cellpadding=3D"0" style=3D"border-collapse:collapse; =
+border-spacing:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_paragraph" style=3D"border-collapse:collapse; color:#=
+000000; font-family:Arial,'Helvetica Neue',Helvetica,sans-serif; font-size:=
+14px; line-height:22.4px; word-break:break-word; word-wrap:break-word; text=
+-align:center">
+Tinchens Wirtschaft hat in der Woche vom 30.03. bis 04.03.2020 wieder f=FCr=
+ Sie ge=F6ffnet!<br>
+<br>
+Wir bieten Ihnen t=E4glich ein Hauptgericht und eine Suppe an.<br>
+Dazu haben wir unsere Suppe als vegetarische Alternative sowie <br>
+Montag bis Donnerstag ein vegetarisches Wochengericht im Angebot.<br>
+<br>
+</td>
+</tr>
+</tbody>
+</table>
+<table width=3D"100%" cellpadding=3D"0" style=3D"border-collapse:collapse; =
+border-spacing:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_paragraph" style=3D"border-collapse:collapse; color:#=
+000000; font-family:Arial,'Helvetica Neue',Helvetica,sans-serif; font-size:=
+14px; line-height:22.4px; word-break:break-word; word-wrap:break-word; text=
+-align:center">
+<strong>Bitte beachten Sie, dass die die Gerichte ausschlie=DFlich <br>
+frisch verpackt zur Abholung angeboten werden!</strong><br>
+<br>
+</td>
+</tr>
+</tbody>
+</table>
+<table width=3D"100%" cellpadding=3D"0" style=3D"border-collapse:collapse; =
+border-spacing:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_paragraph" style=3D"border-collapse:collapse; color:#=
+000000; font-family:Arial,'Helvetica Neue',Helvetica,sans-serif; font-size:=
+14px; line-height:22.4px; word-break:break-word; word-wrap:break-word; text=
+-align:center">
+Den Wochenplan als PDF-Datei k=F6nnen Sie =F6ffnen und speichern,<br>
+indem Sie auf folgenden Link klicken: </td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_padded_vertical mailpoet_padded_side" valign=3D"top" =
+style=3D"border-collapse:collapse; padding-top:10px; padding-bottom:10px; p=
+adding-left:20px; padding-right:20px">
+<div>
+<table width=3D"100%" cellpadding=3D"0" cellspacing=3D"0" border=3D"0" styl=
+e=3D"border-collapse:collapse; border-spacing:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_button-container" style=3D"border-collapse:collapse; =
+text-align:center">
+<a class=3D"mailpoet_button" href=3D"https://dc-eventcatering.de?mailpoet_r=
+outer&amp;endpoint=3Dtrack&amp;action=3Dclick&amp;data=3DWyIyMzEiLCJzcTVqNX=
+NsZzFua2s0OHc4Y2tjY2dndzhzc2c0OGtzOCIsIjEiLCJlMzcwYTJhNDZkY2MiLGZhbHNlXQ" s=
+tyle=3D"color:#ffffff; text-decoration:none!important; display:inline-block=
+; text-align:center; background-color:#b91010; border-color:#b91010; border=
+-width:0px; border-radius:5px; border-style:solid; width:191px; line-height=
+:40px; font-family:Arial,'Helvetica Neue',Helvetica,sans-serif; font-size:1=
+6px; font-weight:bold">Speiseplan
+ als PDF</a> </td>
+</tr>
+</tbody>
+</table>
+</div>
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_image mailpoet_padded_vertical mailpoet_padded_side" =
+align=3D"center" valign=3D"top" style=3D"border-collapse:collapse; padding-=
+top:10px; padding-bottom:10px; padding-left:20px; padding-right:20px">
+<img src=3D"https://dc-eventcatering.de/wp-content/uploads/2020/03/Lieferdi=
+enst.png" width=3D"198" alt=3D"Lieferdienst" style=3D"height:auto; max-widt=
+h:100%; border:0; display:block; outline:none; text-align:center">
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" v=
+align=3D"top" style=3D"border-collapse:collapse; padding-top:10px; padding-=
+bottom:10px; padding-left:20px; padding-right:20px; word-break:break-word; =
+word-wrap:break-word">
+<h2 style=3D"margin:0 0 7.2px; color:#222222; font-family:Arial,'Helvetica =
+Neue',Helvetica,sans-serif; font-size:24px; line-height:38.4px; margin-bott=
+om:0; text-align:center; padding:0; font-style:normal; font-weight:normal">
+<span style=3D"color:#ba372a"><strong>TINCHENS LIEFERDIENST</strong></span>=
+</h2>
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" v=
+align=3D"top" style=3D"border-collapse:collapse; padding-top:10px; padding-=
+bottom:10px; padding-left:20px; padding-right:20px; word-break:break-word; =
+word-wrap:break-word">
+<table width=3D"100%" cellpadding=3D"0" style=3D"border-collapse:collapse; =
+border-spacing:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_paragraph" style=3D"border-collapse:collapse; color:#=
+000000; font-family:Arial,'Helvetica Neue',Helvetica,sans-serif; font-size:=
+14px; line-height:22.4px; word-break:break-word; word-wrap:break-word; text=
+-align:left">
+Im Gewerbegebiet Nordost (und angrenzend) bieten wir Ihnen derzeit unseren =
+Lieferdienst an!
+</td>
+</tr>
+</tbody>
+</table>
+<table width=3D"100%" cellpadding=3D"0" style=3D"border-collapse:collapse; =
+border-spacing:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_paragraph" style=3D"border-collapse:collapse; color:#=
+000000; font-family:Arial,'Helvetica Neue',Helvetica,sans-serif; font-size:=
+14px; line-height:22.4px; word-break:break-word; word-wrap:break-word; text=
+-align:left">
+Bestellen sie t=E4glich bis 10:00 Uhr und wir liefern Ihnen zwischen 11:00 =
+Uhr und 13:00 Uhr die gew=FCnschten Speisen an.<br>
+Der Mindestbestellwert betr=E4gt nur 5,00 =80.<br>
+Die Preise f=FCr die Anlieferung sind im Online-Speiseplan =FCber dem Beste=
+llformular bereits inbegriffen:
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_padded_vertical mailpoet_padded_side" valign=3D"top" =
+style=3D"border-collapse:collapse; padding-top:10px; padding-bottom:10px; p=
+adding-left:20px; padding-right:20px">
+<div>
+<table width=3D"100%" cellpadding=3D"0" cellspacing=3D"0" border=3D"0" styl=
+e=3D"border-collapse:collapse; border-spacing:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_button-container" style=3D"border-collapse:collapse; =
+text-align:center">
+<a class=3D"mailpoet_button" href=3D"https://dc-eventcatering.de?mailpoet_r=
+outer&amp;endpoint=3Dtrack&amp;action=3Dclick&amp;data=3DWyIyMzEiLCJzcTVqNX=
+NsZzFua2s0OHc4Y2tjY2dndzhzc2c0OGtzOCIsIjEiLCI3ZTRkYjQ3Y2Y3NzkiLGZhbHNlXQ" s=
+tyle=3D"color:#ffffff; text-decoration:none!important; display:inline-block=
+; text-align:center; background-color:#b91010; border-color:#b91010; border=
+-width:0px; border-radius:5px; border-style:solid; width:191px; line-height=
+:40px; font-family:Arial,'Helvetica Neue',Helvetica,sans-serif; font-size:1=
+6px; font-weight:bold">zur
+ Bestellung</a> </td>
+</tr>
+</tbody>
+</table>
+</div>
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" v=
+align=3D"top" style=3D"border-collapse:collapse; padding-top:10px; padding-=
+bottom:10px; padding-left:20px; padding-right:20px; word-break:break-word; =
+word-wrap:break-word">
+<table width=3D"100%" cellpadding=3D"0" style=3D"border-collapse:collapse; =
+border-spacing:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_paragraph" style=3D"border-collapse:collapse; color:#=
+000000; font-family:Arial,'Helvetica Neue',Helvetica,sans-serif; font-size:=
+14px; line-height:22.4px; word-break:break-word; word-wrap:break-word; text=
+-align:center">
+Wir w=FCnschen Guten Appetit<br>
+und bleiben Sie Gesund! </td>
+</tr>
+</tbody>
+</table>
+<table width=3D"100%" cellpadding=3D"0" style=3D"border-collapse:collapse; =
+border-spacing:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_paragraph" style=3D"border-collapse:collapse; color:#=
+000000; font-family:Arial,'Helvetica Neue',Helvetica,sans-serif; font-size:=
+14px; line-height:22.4px; word-break:break-word; word-wrap:break-word; text=
+-align:center">
+<br>
+Ihr Team von DC Catering </td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_divider" valign=3D"top" style=3D"border-collapse:coll=
+apse; padding:13px 20px 13px 20px">
+<table width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" styl=
+e=3D"border-collapse:collapse; border-spacing:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_divider-cell" style=3D"border-collapse:collapse; bord=
+er-top-width:1px; border-top-style:solid; border-top-color:#d6d6d6">
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_content" align=3D"center" style=3D"border-collapse:co=
+llapse">
+<table width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" styl=
+e=3D"border-collapse:collapse; border-spacing:0">
+<tbody>
+<tr>
+<td style=3D"border-collapse:collapse; padding-left:0; padding-right:0">
+<table width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" clas=
+s=3D"mailpoet_cols-one" style=3D"border-collapse:collapse; border-spacing:0=
+; table-layout:fixed; margin-left:auto; margin-right:auto; padding-left:0; =
+padding-right:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_spacer" height=3D"20" valign=3D"top" style=3D"border-=
+collapse:collapse">
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_image mailpoet_padded_vertical mailpoet_padded_side" =
+align=3D"center" valign=3D"top" style=3D"border-collapse:collapse; padding-=
+top:10px; padding-bottom:10px; padding-left:20px; padding-right:20px">
+<img src=3D"https://dc-eventcatering.de/wp-content/uploads/2019/02/DCC-Logo=
+-4c-2019-web.png" width=3D"76" alt=3D"DCC-Logo-4c-2019-web" style=3D"height=
+:auto; max-width:100%; border:0; display:block; outline:none; text-align:ce=
+nter">
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_header_footer_padded mailpoet_footer" style=3D"border=
+-collapse:collapse; padding:10px 20px; line-height:19.2px; text-align:cente=
+r; color:#222222; font-family:Arial,'Helvetica Neue',Helvetica,sans-serif; =
+font-size:12px">
+<strong><span style=3D"color:#b50109">DC-CATERING</span></strong><br>
+<strong>Ihr Anspruch ist unser Geschmack<br>
+<br>
+Stefan Monse | Office<br>
+Telefon: 0341 - 92 78 08 12</strong><br>
+&nbsp;<br>
+<strong><strong>DC Catering GbR <br>
+Inh. Christian Seidel <br>
+Inh. Daniel Schneidewind <br>
+F=F6pplstra=DFe 5 <br>
+04347 Leipzig </strong></strong><br>
+<strong><a href=3D"https://dc-eventcatering.de?mailpoet_router&amp;endpoint=
+=3Dtrack&amp;action=3Dclick&amp;data=3DWyIyMzEiLCJzcTVqNXNsZzFua2s0OHc4Y2tj=
+Y2dndzhzc2c0OGtzOCIsIjEiLCI5ODZjMzRiYTE2ZDIiLGZhbHNlXQ" style=3D"color:#ba0=
+f06!important; text-decoration:none; background-color:#ffffff; border:0; wo=
+rd-wrap:break-word">Web:
+ www.dc-catering.de</a><br>
+<a href=3D"https://dc-eventcatering.de?mailpoet_router&amp;endpoint=3Dtrack=
+&amp;action=3Dclick&amp;data=3DWyIyMzEiLCJzcTVqNXNsZzFua2s0OHc4Y2tjY2dndzhz=
+c2c0OGtzOCIsIjEiLCJjZTMwNGMyZjc3ZWYiLGZhbHNlXQ" style=3D"color:#ba0f06!impo=
+rtant; text-decoration:none; background-color:#ffffff; border:0; word-wrap:=
+break-word">Facebook:
+ Facebook/DC Catering </a><br>
+</strong><br>
+<br>
+<br>
+SAVE PAPER - THINK BEFORE YOU PRINT Diese E-Mail enth=E4lt vertrauliche und=
+/oder rechtlich gesch=FCtzte Informationen. Wenn Sie nicht der richtige Adr=
+essat sind oder diese E-Mail irrt=FCmlich erhalten haben, informieren Sie b=
+itte sofort den Absender und vernichten
+ Sie diese Mail. Das unerlaubte Kopieren sowie die unbefugte Weitergabe die=
+ser Mail sind nicht gestattet. Der Austausch von Nachrichten mit unserem Un=
+ternehmen via E-Mail dient ausschlie=DFlich Informationszwecken. Rechtsgesc=
+h=E4ftliche Erkl=E4rungen d=FCrfen =FCber
+ dieses Medium nicht ausgetauscht werden. Verf=E4lschungen des urspr=FCngli=
+chen Inhaltes dieser Nachricht bei der Daten=FCbertragung k=F6nnen nicht au=
+sgeschlossen werden. This email and any files transmitted with it are confi=
+dential and intended solely for the use
+ of the individual or entity to whom they are addressed. If you are not the=
+ intended recipient of this email and have received it in error you should =
+delete<br>
+<br>
+<a href=3D"https://dc-eventcatering.de?mailpoet_router&amp;endpoint=3Dtrack=
+&amp;action=3Dclick&amp;data=3DWyIyMzEiLCJzcTVqNXNsZzFua2s0OHc4Y2tjY2dndzhz=
+c2c0OGtzOCIsIjEiLCI4ZTVhNjJkNmFkNmQiLGZhbHNlXQ" style=3D"color:#6cb7d4; tex=
+t-decoration:none">Austragen</a>
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_header_footer_padded mailpoet_footer" style=3D"border=
+-collapse:collapse; padding:10px 20px; line-height:19.2px; text-align:cente=
+r; color:#222222; font-family:Arial,'Helvetica Neue',Helvetica,sans-serif; =
+font-size:12px">
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td class=3D"mailpoet_content" align=3D"center" bgcolor=3D"#ffffff" style=
+=3D"border-collapse:collapse; background-color:#ffffff!important">
+<table width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" styl=
+e=3D"border-collapse:collapse; border-spacing:0">
+<tbody>
+<tr>
+<td style=3D"border-collapse:collapse; padding-left:0; padding-right:0">
+<table width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" clas=
+s=3D"mailpoet_cols-one" style=3D"border-collapse:collapse; border-spacing:0=
+; table-layout:fixed; margin-left:auto; margin-right:auto; padding-left:0; =
+padding-right:0">
+<tbody>
+<tr>
+<td class=3D"mailpoet_image mailpoet_padded_vertical mailpoet_padded_side" =
+align=3D"center" valign=3D"top" style=3D"border-collapse:collapse; padding-=
+top:10px; padding-bottom:10px; padding-left:20px; padding-right:20px">
+<a href=3D"https://dc-eventcatering.de?mailpoet_router&amp;endpoint=3Dtrack=
+&amp;action=3Dclick&amp;data=3DWyIyMzEiLCJzcTVqNXNsZzFua2s0OHc4Y2tjY2dndzhz=
+c2c0OGtzOCIsIjEiLCIzZGI2NzczYzM4YmEiLGZhbHNlXQ" style=3D"color:#0f0f0f; tex=
+t-decoration:underline"><img src=3D"https://dc-eventcatering.de/wp-content/=
+plugins/mailpoet/assets/img/mailpoet_logo_newsletter.png" width=3D"108" alt=
+=3D"MailPoet" style=3D"height:auto; max-width:100%; border:0; display:block=
+; outline:none; text-align:center"></a>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<img alt=3D"" class=3D"" src=3D"https://dc-eventcatering.de?mailpoet_router=
+&amp;endpoint=3Dtrack&amp;action=3Dopen&amp;data=3DWyIyMzEiLCJzcTVqNXNsZzFu=
+a2s0OHc4Y2tjY2dndzhzc2c0OGtzOCIsIjEiLG51bGwsZmFsc2Vd">
+</div>
+</body>
+</html>
+
+--_000_bf3a05bac99e4ecabf02a9700bd61839HE1PR0102MB2795eurprd01_--
