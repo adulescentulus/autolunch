@@ -85,12 +85,13 @@ def processMail(msg):
         body = msg.get_payload(decode=True)
 
 def getLink(html):
+    #print(html)
     soup = BeautifulSoup(html, 'html.parser')
-    print(soup.select('a > span'))
-    for anchor in soup.select('a > span'):
+    print(soup.select('a'))
+    for anchor in soup.select('a'):
         spanText = anchor.get_text(strip=True)
-        if (spanText.find('Speiseplan') >= 0 and spanText.endswith('pdf') == True):
-            return anchor.find_parent()['href']
+        if (spanText.find('Speiseplan') >= 0 and spanText.endswith('PDF') == True):
+            return anchor['href']
 
 def download(url, file_name):
     # open in binary mode

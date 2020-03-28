@@ -87,7 +87,7 @@ Resources:
               Condition:
                   StringEquals:
                       "ses:FromAddress": 
-                        Ref: MailRecipient
+                          Ref: MailSender
   SesTinchenLambda:
     Type: AWS::Serverless::Function
     Properties:
